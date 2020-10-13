@@ -1,0 +1,7 @@
+rm(wvs_arg,wvs_arg2,WVS_TimeSeries)
+library("tidyverse")
+preg1 <- select(Latinobarometro_2018_Esp_R_v20190303, "P43N")
+summarize(preg1)
+library(readxl)
+read_xlsx(path = hannu/Documents/Womeninpolitics/ultimaversion_gabinetes2015-2019.xlsx)
+gabinetesarg <- select(ultimaversion_gabinetes_2015_2019, "provincia", "gobernadore", "nombre", "anio_inicio", "organismo")
