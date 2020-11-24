@@ -1,4 +1,4 @@
-library("tidyverse")
+library(tidyverse)
 library(ggplot2)
 library(ggthemes)
 library(hrbrthemes)
@@ -7,8 +7,12 @@ library(geofaceteAR)
 
 #Gráfico de la evolución por año de la participación. 
 
+library(readxl)
+gabinetes_actualizado <- read_excel("gabinetes_5.xlsx")
+View(gabinetes_actualizado)
+
 evolucion1 <-
-  gabinetes_5 %>%
+  gabinetes_actualizado %>%
   select("anio", "genero")%>%
   print()
 
@@ -28,17 +32,21 @@ evolucion2 <- mujeres %>% left_join(hombres) %>%
   mutate(prct_m = (m/total)*100)
 
 #grafico de la evolucion total de las mujeres
-evolucion_total_mujeres <-
+
 ggplot(evolucion2) +
   geom_point(mapping = aes(x = anio, y = prct_f), shape = 16, size = 2, color="#69b3a2") +
-  geom_line(aes(x=anio, y= prct_f), color="#69b3a2")+
-  scale_x_continuous(aes(x= evolucion2$anio), breaks = c(2008, 2009, 2010, 2011, 2012,
+  geom_text(aes(y=prct_f, x=anio, label= round(evolucion2$prct_f)),hjust=1.5, vjust= 0
+            ) +
+  geom_line(aes(x=anio, y= prct_f), color="#69b3a2") +
+  scale_x_continuous(aes(x= anio), breaks = c(2008, 2009, 2010, 2011, 2012,
                      2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020), 
                      labels =c("2008", "2009", "2010", "2011", "2012",
                                "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020")) +
   ylab("% de mujeres") +
-  xlab("año") +
-  theme_ipsum_rc()
+  xlab("Año") +
+  theme_ipsum_rc() +
+  labs(title = "Porcentaje de mujeres en gabinetes provinciales", caption = "Fuente: Elaboración propia")
+
 
 #geofacet de la evolucion de mujeres por prov
 
@@ -81,6 +89,9 @@ pba_02 <- pba_f %>% left_join(pba_m) %>%
   labs(title = "Evolución en PBA") +
   theme_ipsum_rc()
 
+  
+  
+  
 #2 CABA
   caba_f <- gabinetes_5 %>%
     filter(cod_provincia == 2) %>%
@@ -138,7 +149,7 @@ cat_03 <- cat_m %>% left_join(cat_f) %>%
   mutate(total = f+m)%>%
   mutate(prct_f = (f/total)*100) %>%
   mutate(prct_m = (m/total)*100) %>%
-  replace(is.na(.), 0) %>% 
+  replace(is.na(.), 0) %>%
   mutate(cat_03, cod_provincia = 03) %>% 
   print()
 
@@ -154,3 +165,21 @@ ggplot(cat_03) +
   xlab("año") +
   labs(title = "Evolución en Catamarca") +
   theme_ipsum_rc()
+
+#Evolución total con corte según mandato.  
+
+evolucion_mandatos <- evolucion2 %>%
+  filter(evolucion2$anio %in% c(2008, 2012, 2016, 2020))%>%
+  print()
+
+ggplot(evolucion_mandatos) +
+  geom_point(mapping = aes(x = anio, y = prct_f), shape = 16, size = 2, color="#69b3a2") +
+  geom_text(aes(y=prct_f, x=anio, label= round(evolucion_mandatos$prct_f)),hjust=1.5, vjust= 0
+  ) +
+  geom_line(aes(x=anio, y= prct_f), color="#69b3a2") +
+  scale_x_continuous(aes(x= anio), breaks = c(2008, 2012, 2016, 2020), 
+                     labels =c("2008", "2012", "2016", "2020")) +
+  ylab("% de mujeres") +
+  xlab("Año") +
+  theme_ipsum_rc()+
+  labs(title = "Porcentaje de mujeres en gabinetes provinciales", subtitle = "Años de cambio de mandato", caption = "Fuente: Elaboración propia")
